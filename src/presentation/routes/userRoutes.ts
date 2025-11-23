@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { CreateUserCommandHandler } from '../../application/commands/CreateUserCommandHandler';
-import { MongoUserRepository } from '../../infrastructure/persistence/MongoUserRepository';
+import { TypeOrmUserRepository } from '../../infrastructure/persistence/typeorm/TypeOrmUserRepository';
 import { validateCreateUser } from '../middlewares/validateRequest';
 import { strictRateLimiter } from '../middlewares/rateLimiter';
 
@@ -15,7 +15,7 @@ export const createUserRouter = (): Router => {
   const router = Router();
 
   // Manual dependency injection (can be replaced with an IoC container)
-  const userRepository = new MongoUserRepository();
+  const userRepository = new TypeOrmUserRepository();
   const createUserHandler = new CreateUserCommandHandler(userRepository);
   const userController = new UserController(createUserHandler);
 

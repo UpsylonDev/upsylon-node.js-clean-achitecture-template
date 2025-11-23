@@ -21,10 +21,32 @@ export class Environment {
   public static readonly NODE_ENV: string = process.env.NODE_ENV || 'development';
 
   /**
-   * URI de connexion MongoDB.
+   * Host PostgreSQL.
    */
-  public static readonly MONGODB_URI: string =
-    process.env.MONGODB_URI || 'mongodb://localhost:27017/ddd-user-api';
+  public static readonly POSTGRES_HOST: string = process.env.POSTGRES_HOST || 'localhost';
+
+  /**
+   * Port PostgreSQL.
+   */
+  public static readonly POSTGRES_PORT: number = parseInt(
+    process.env.POSTGRES_PORT || '5432',
+    10
+  );
+
+  /**
+   * Utilisateur PostgreSQL.
+   */
+  public static readonly POSTGRES_USER: string = process.env.POSTGRES_USER || 'postgres';
+
+  /**
+   * Mot de passe PostgreSQL.
+   */
+  public static readonly POSTGRES_PASSWORD: string = process.env.POSTGRES_PASSWORD || 'postgres';
+
+  /**
+   * Nom de la base de données PostgreSQL.
+   */
+  public static readonly POSTGRES_DB: string = process.env.POSTGRES_DB || 'ddd-user-api';
 
   /**
    * Nombre de rounds de salt pour bcrypt.
@@ -111,7 +133,13 @@ export class Environment {
    * @throws {Error} Si une variable requise est manquante
    */
   public static validate(): void {
-    const requiredVars = ['MONGODB_URI'];
+    const requiredVars = [
+      'POSTGRES_HOST',
+      'POSTGRES_PORT',
+      'POSTGRES_USER',
+      'POSTGRES_PASSWORD',
+      'POSTGRES_DB',
+    ];
     // Require Stripe secrets in production
     if (Environment.isProduction()) {
       requiredVars.push('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET');

@@ -1,5 +1,6 @@
+import 'reflect-metadata';
 import { createApp } from './app';
-import { MongoConnection } from './infrastructure/persistence/mongoose/connection';
+import { TypeOrmConnection } from './infrastructure/persistence/typeorm/TypeOrmConnection';
 import { RedisConnection } from './infrastructure/persistence/redis/connection';
 import { Environment } from './infrastructure/config/environment';
 import { PinoLogger } from './infrastructure/logging/PinoLogger';
@@ -16,10 +17,10 @@ const startServer = async (): Promise<void> => {
     logger.info('Validating environment variables');
     Environment.validate();
 
-    // 2. Connect to MongoDB
-    logger.info('Connecting to MongoDB');
-    const mongoConnection = MongoConnection.getInstance();
-    await mongoConnection.connect();
+    // 2. Connect to Database (PostgreSQL)
+    logger.info('Connecting to Database');
+    const dbConnection = TypeOrmConnection.getInstance();
+    await dbConnection.connect();
 
     // 3. Connect to Redis
     logger.info('Connecting to Redis');
