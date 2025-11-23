@@ -1,6 +1,6 @@
 # Docker Setup Guide
 
-This guide explains how to run the DDD User API using Docker.
+This guide explains how to run the REST API using Docker with PostgreSQL and Redis.
 
 ## Prerequisites
 
@@ -8,6 +8,7 @@ This guide explains how to run the DDD User API using Docker.
 - Docker Compose V2+
 
 Check your installation:
+
 ```bash
 docker --version
 docker-compose --version
@@ -15,34 +16,30 @@ docker-compose --version
 
 ## Quick Start
 
-### 1. Configure environment variables
+### 1. Configure environment variables (Optional for Docker)
 
-The project uses a `.env` file for configuration. Docker Compose automatically loads this file.
-
-**Important:** Your `.env` file should contain environment variables. The `MONGODB_URI` will be automatically overridden to use the Docker MongoDB container.
+For Docker deployment, most settings are pre-configured in `docker-compose.yml`. You can optionally create a `.env` file to override defaults:
 
 ```bash
-# Your .env file should look like this:
-NODE_ENV=production
-PORT=3000
-BCRYPT_SALT_ROUNDS=10
-MONGODB_URI=mongodb://localhost:27017/ddd-user-api  # Will be overridden for Docker
+# Optional .env file for Docker
+EXTRA_API_KEY=your_extra_api_key_here
+LOG_LEVEL=info
 ```
 
-**Note:** For Docker, the `MONGODB_URI` is automatically set to `mongodb://mongodb:27017/ddd-user-api` in docker-compose.yml to use the containerized MongoDB.
+**Note:** PostgreSQL and Redis connection settings are automatically configured in `docker-compose.yml` to use the containerized services.
 
-### 2. Start the application
+### 2. Start all services (Production)
 
 ```bash
 docker-compose up -d
 ```
 
 This command will:
-- Load environment variables from `.env` file
-- Pull the MongoDB image
+
+- Pull PostgreSQL and Redis images
 - Build the Node.js application image
-- Start both containers
-- Create a persistent volume for MongoDB data
+- Start all three containers (app, postgres, redis)
+- Create persistent volumes for database data
 
 ### 3. Verify services are running
 
@@ -53,9 +50,10 @@ docker-compose ps
 # View logs
 docker-compose logs -f
 
-# View logs for a specific service
+# View logs for specific services
 docker-compose logs -f app
-docker-compose logs -f mongodb
+docker-compose logs -f postgres
+docker-compose logs -f redis
 ```
 
 ### 4. Test the API
@@ -64,16 +62,70 @@ docker-compose logs -f mongodb
 # Health check
 curl http://localhost:3000/health
 
+# Metrics
+curl http://localhost:3000/metrics
+
 # Create a user
 curl -X POST http://localhost:3000/user \
   -H "Content-Type: application/json" \
-  -d '{"email": "test@example.com", "password": "SecurePass123!"}'
+  -d '{"email": "test@example.com", "password": "SecurePass123"}'
+```
+
+## Development Workflow
+
+### Recommended: Hybrid Approach
+
+**Run PostgreSQL and Redis in Docker, but run the app locally for faster development:**
+
+```bash
+# 1. Start only PostgreSQL and Redis
+docker-compose up postgres redis -d
+
+# 2. Verify services are running
+docker-compose ps
+
+# 3. Configure your .env file for local development
+# POSTGRES_HOST=localhost
+# POSTGRES_PORT=5432
+# REDIS_HOST=localhost
+# REDIS_PORT=6379
+
+# 4. Run the app locally with hot-reload
+pnpm dev
+```
+
+**Benefits:**
+
+- Fast hot-reload with nodemon
+- No need to rebuild Docker image for code changes
+- Direct access to logs and debugging
+- Database and cache still isolated in containers
+
+### Alternative: Full Docker Development
+
+Run everything in Docker:
+
+```bash
+# Start all services
+docker-compose up -d
+
+# Make code changes
+
+# Rebuild and restart
+docker-compose up -d --build
 ```
 
 ## Common Commands
 
-### Stop services
+### Start/Stop Services
+
 ```bash
+# Start all services
+docker-compose up -d
+
+# Start only database services (recommended for dev)
+docker-compose up postgres redis -d
+
 # Stop containers (keeps data)
 docker-compose stop
 
@@ -81,7 +133,8 @@ docker-compose stop
 docker-compose down
 ```
 
-### Clean restart
+### Clean Restart
+
 ```bash
 # Remove everything including database data
 docker-compose down -v
@@ -90,7 +143,8 @@ docker-compose down -v
 docker-compose up -d
 ```
 
-### Rebuild after code changes
+### Rebuild After Code Changes
+
 ```bash
 # Rebuild and restart
 docker-compose up -d --build
@@ -100,22 +154,29 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
-### View logs
+### View Logs
+
 ```bash
 # All services
 docker-compose logs -f
 
 # Specific service
+docker-compose logs -f postgres
+docker-compose logs -f redis
 docker-compose logs -f app
 
 # Last 100 lines
 docker-compose logs --tail=100
 ```
 
-### Execute commands in containers
+### Execute Commands in Containers
+
 ```bash
-# Access MongoDB shell
-docker-compose exec mongodb mongosh ddd-user-api
+# Access PostgreSQL shell
+docker-compose exec postgres psql -U postgres -d ddd-user-api
+
+# Access Redis CLI
+docker-compose exec redis redis-cli
 
 # Access application container shell
 docker-compose exec app sh
@@ -127,74 +188,77 @@ docker-compose exec app pnpm test
 ## Container Details
 
 ### Application Container
-- **Name**: `ddd-app`
-- **Port**: 3000 (mapped to host:3000, configurable via PORT env var)
+
+- **Name**: `upsylon-api`
+- **Port**: 3000 (mapped to host:3000)
 - **Base Image**: node:20-alpine
-- **User**: Non-root user (nodejs:1001)
-- **Environment**: Loaded from `.env` file, with Docker-specific overrides
+- **User**: Non-root user (node)
+- **Environment**: Configured in docker-compose.yml
 - **Health Check**: HTTP GET to /health every 30s
 
-### MongoDB Container
-- **Name**: `ddd-mongodb`
-- **Port**: 27017 (mapped to host:27017)
-- **Image**: mongo:7-jammy
+### PostgreSQL Container
+
+- **Name**: `upsylon-postgres`
+- **Port**: 5432 (mapped to host:5432)
+- **Image**: postgres:16-alpine
 - **Database**: ddd-user-api
-- **Volumes**:
-  - `mongodb_data`: Database files
-  - `mongodb_config`: Configuration files
+- **User**: postgres
+- **Password**: postgres (change in production!)
+- **Volumes**: `postgres_data` - Database files
+- **Health Check**: `pg_isready` every 10s
 
-## Development Workflow
+### Redis Container
 
-### Local development with Docker
+- **Name**: `upsylon-redis`
+- **Port**: 6379 (mapped to host:6379)
+- **Image**: redis:7-alpine
+- **Volumes**: `redis_data` - Persistence files
+- **Health Check**: `redis-cli ping` every 10s
 
-1. **Start services in detached mode:**
-   ```bash
-   docker-compose up -d
-   ```
+## Environment Configuration
 
-2. **Make code changes** on your local machine
+### For Docker (Production)
 
-3. **Rebuild and restart:**
-   ```bash
-   docker-compose up -d --build
-   ```
+Settings are in `docker-compose.yml`. The app service uses:
 
-### Alternative: Hybrid approach
+- `POSTGRES_HOST=postgres` (container name)
+- `REDIS_HOST=redis` (container name)
 
-Run MongoDB in Docker, but run the app locally for faster iteration:
+### For Local Development
 
-```bash
-# Start only MongoDB
-docker-compose up -d mongodb
+Your `.env` file should use:
 
-# Make sure your .env file uses localhost for MongoDB
-# MONGODB_URI=mongodb://localhost:27017/ddd-user-api
+```env
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=ddd-user-api
 
-# Run app locally with pnpm
-pnpm dev
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
 ```
-
-**Important:** When running the app locally (not in Docker), make sure your `.env` file has `MONGODB_URI=mongodb://localhost:27017/ddd-user-api` to connect to the Docker MongoDB container.
 
 ## Troubleshooting
 
 ### Containers won't start
 
 Check logs:
+
 ```bash
 docker-compose logs
 ```
 
 Common issues:
-- **Port already in use**: Change ports in docker-compose.yml or `.env` file (PORT variable)
-- **MongoDB fails to start**: Check available disk space
-- **Build fails**: Try `docker-compose build --no-cache`
-- **Environment variables not loaded**: Ensure `.env` file exists in the project root
-- **TypeScript compilation errors**:
-  - Error `TS5095: Option 'bundler' can only be used when...`: Use `"moduleResolution": "node"` in tsconfig.json with CommonJS
-  - Ensure tsconfig.json has correct module resolution for Node.js projects
 
-### Clean everything
+- **Port already in use**: Change ports in docker-compose.yml
+- **PostgreSQL fails to start**: Check available disk space
+- **Build fails**: Try `docker-compose build --no-cache`
+- **Environment variables not loaded**: Check docker-compose.yml configuration
+
+### Clean Everything
 
 ```bash
 # Stop and remove containers, volumes, and networks
@@ -204,91 +268,98 @@ docker-compose down -v
 docker system prune -a --volumes
 ```
 
-### Connection issues
+### Connection Issues
 
-If the app can't connect to MongoDB:
-1. Check MongoDB is healthy: `docker-compose ps`
-2. Check logs: `docker-compose logs mongodb`
-3. Verify network: `docker network inspect a-ddd-from-scratch_ddd-network`
+If the app can't connect to PostgreSQL:
 
-### Build errors
+1. Check PostgreSQL is healthy: `docker-compose ps`
+2. Check logs: `docker-compose logs postgres`
+3. Verify network: `docker network ls`
 
-If you encounter TypeScript compilation errors during build:
+If the app can't connect to Redis:
 
-```bash
-# Common error: TS5095 about moduleResolution
-# Solution: Ensure tsconfig.json uses "moduleResolution": "node" with CommonJS
-```
-
-**Fix:**
-1. Open `tsconfig.json`
-2. Check that `"module": "commonjs"` is paired with `"moduleResolution": "node"`
-3. Never use `"moduleResolution": "bundler"` with CommonJS modules
+1. Check Redis is healthy: `docker-compose ps`
+2. Check logs: `docker-compose logs redis`
+3. Test connection: `docker-compose exec redis redis-cli ping`
 
 ### Performance on Windows/Mac
 
 Docker Desktop uses virtualization which can be slower. For better performance:
-- Allocate more resources to Docker Desktop
+
+- Allocate more resources to Docker Desktop (Settings → Resources)
 - Use WSL2 backend on Windows
-- Consider running services natively for development
+- Use the hybrid approach (databases in Docker, app locally)
 
 ## Production Considerations
 
 The current setup is optimized for **development**. For production:
 
-1. **Use environment variables properly:**
-   - Don't hardcode credentials
-   - Use Docker secrets or external secret management
+### 1. Security Hardening
 
-2. **Security hardening:**
-   - Enable MongoDB authentication
-   - Use TLS/SSL for connections
-   - Run containers with minimal privileges
+- **Change default passwords** in docker-compose.yml
+- Enable PostgreSQL authentication and TLS
+- Use Docker secrets for sensitive data
+- Run containers with minimal privileges
+- Enable Redis authentication
 
-3. **Monitoring:**
-   - Add logging aggregation
-   - Implement metrics collection
-   - Set up alerts for health checks
+### 2. Environment Variables
 
-4. **Scaling:**
-   - Use orchestration (Kubernetes, Docker Swarm)
-   - Add load balancer
-   - Configure MongoDB replica set
+- Don't hardcode credentials
+- Use Docker secrets or external secret management (AWS Secrets Manager, HashiCorp Vault)
+- Set `NODE_ENV=production`
 
-5. **Backups:**
-   - Implement automated MongoDB backups
-   - Test restore procedures
-   - Store backups off-site
+### 3. Monitoring
+
+- Add logging aggregation (ELK, Loki)
+- Implement metrics collection (Prometheus already included)
+- Set up alerts for health checks
+- Monitor database performance
+
+### 4. Scaling
+
+- Use orchestration (Kubernetes, Docker Swarm)
+- Add load balancer (Nginx, Traefik)
+- Configure PostgreSQL replication
+- Use Redis Cluster for high availability
+
+### 5. Backups
+
+- Implement automated PostgreSQL backups
+- Test restore procedures regularly
+- Store backups off-site (S3, Azure Blob)
+- Backup Redis persistence files
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────┐
-│   Host Machine (Windows/Mac/Linux)  │
-│                                     │
-│  ┌───────────────────────────────┐ │
-│  │   Docker Network: ddd-network │ │
-│  │                               │ │
-│  │  ┌────────────────────────┐  │ │
-│  │  │  App Container         │  │ │
-│  │  │  - Node.js 20 Alpine   │  │ │
-│  │  │  - Port: 3000          │  │ │
-│  │  │  - Multi-stage build   │  │ │
-│  │  └────────────────────────┘  │ │
-│  │             ↓                 │ │
-│  │  ┌────────────────────────┐  │ │
-│  │  │  MongoDB Container     │  │ │
-│  │  │  - MongoDB 7           │  │ │
-│  │  │  - Port: 27017         │  │ │
-│  │  │  - Persistent volumes  │  │ │
-│  │  └────────────────────────┘  │ │
-│  └───────────────────────────────┘ │
-└─────────────────────────────────────┘
+┌─────────────────────────────────────────────┐
+│   Host Machine (Windows/Mac/Linux)          │
+│                                             │
+│  ┌───────────────────────────────────────┐ │
+│  │   Docker Network: default             │ │
+│  │                                       │ │
+│  │  ┌─────────────────────────────────┐ │ │
+│  │  │  App Container (upsylon-api)    │ │ │
+│  │  │  - Node.js 20 Alpine            │ │ │
+│  │  │  - Port: 3000                   │ │ │
+│  │  │  - Multi-stage build            │ │ │
+│  │  └─────────────────────────────────┘ │ │
+│  │             ↓              ↓          │ │
+│  │  ┌──────────────┐  ┌──────────────┐ │ │
+│  │  │  PostgreSQL  │  │    Redis     │ │ │
+│  │  │  Container   │  │  Container   │ │ │
+│  │  │  - PG 16     │  │  - Redis 7   │ │ │
+│  │  │  - Port 5432 │  │  - Port 6379 │ │ │
+│  │  │  - Volume    │  │  - Volume    │ │ │
+│  │  └──────────────┘  └──────────────┘ │ │
+│  └───────────────────────────────────────┘ │
+└─────────────────────────────────────────────┘
 ```
 
 ## Next Steps
 
 - Configure CI/CD pipeline with Docker
 - Add integration tests with test containers
-- Implement monitoring and logging
+- Implement database migrations
 - Set up staging environment
+- Configure monitoring and alerting

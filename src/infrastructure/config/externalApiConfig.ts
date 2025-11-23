@@ -22,7 +22,7 @@ export class ExternalApiConfig {
    */
   constructor(apiUrl?: string, timeout: number = 5000) {
     if (!apiUrl || apiUrl.trim() === '') {
-      throw new Error('EXTRA_API_KEY environment variable must be defined');
+      throw new Error('External API URL must be defined');
     }
 
     this.apiUrl = apiUrl;
@@ -31,10 +31,13 @@ export class ExternalApiConfig {
 
   /**
    * Creates an ExternalApiConfig from environment variables.
+   * Defaults to JSONPlaceholder API if EXTERNAL_API_URL is not set.
    *
    * @returns A new ExternalApiConfig instance
    */
   public static fromEnvironment(): ExternalApiConfig {
-    return new ExternalApiConfig(process.env.EXTRA_API_KEY);
+    const apiUrl =
+      process.env.EXTERNAL_API_URL || 'https://jsonplaceholder.typicode.com/posts';
+    return new ExternalApiConfig(apiUrl);
   }
 }
