@@ -1,0 +1,111 @@
+a-ddd-from-scratch/
+│
+├── 📁 src/                                    # CODE SOURCE
+│   │
+│   ├── 📁 domain/                             # DOMAIN LAYER (Core Business)
+│   │   ├── 📁 entities/
+│   │   │   ├── User.ts
+│   │   │   └── User.spec.ts
+│   │   ├── 📁 valueObjects/
+│   │   │   ├── Email.ts
+│   │   │   ├── Email.spec.ts
+│   │   │   ├── Password.ts
+│   │   │   └── Password.spec.ts
+│   │   └── 📁 repositories/
+│   │       └── IUserRepository.ts
+│   │
+│   ├── 📁 application/                        # APPLICATION LAYER (Use Cases)
+│   │   ├── 📁 commands/
+│   │   │   ├── CreateUserCommand.ts
+│   │   │   ├── CreateUserCommandHandler.ts
+│   │   │   └── CreateUserCommandHandler.spec.ts
+│   │   └── 📁 dtos/
+│   │       └── CreateUserDTO.ts
+│   │
+│   ├── 📁 infrastructure/                     # INFRASTRUCTURE LAYER (Technical)
+│   │   ├── 📁 config/
+│   │   │   └── environment.ts
+│   │   └── 📁 persistence/
+│   │       ├── MongoUserRepository.ts
+│   │       ├── MongoUserRepository.spec.ts
+│   │       └── 📁 mongoose/
+│   │           ├── connection.ts
+│   │           └── userModel.ts
+│   │
+│   ├── 📁 presentation/                       # PRESENTATION LAYER (API)
+│   │   ├── 📁 routes/
+│   │   │   └── userRoutes.ts
+│   │   ├── 📁 controllers/
+│   │   │   └── UserController.ts
+│   │   └── 📁 middlewares/
+│   │       └── errorHandler.ts
+│   │
+│   ├── app.ts                                 # Express app config
+│   └── server.ts                              # Server startup
+│
+├── 📁 docs/                                   # DOCUMENTATION
+│   │
+│   ├── 00-START-HERE.md                       # ⭐ Point d'entrée
+│   ├── INDEX.md                               # Table des matières
+│   │
+│   ├── 🚀 Guides pratiques
+│   │   ├── QUICKSTART.md                      # Démarrage 5 min
+│   │   ├── README.md                          # Doc API complète
+│   │   └── COMMANDS.md                        # Commandes utiles
+│   │
+│   ├── 🏗️ Architecture
+│   │   ├── ARCHITECTURE.md                    # DDD détaillé
+│   │   └── DIAGRAM.md                         # Schémas visuels
+│   │
+│   ├── 🤝 Contribution
+│   │   └── CONTRIBUTING.md                    # Guide contributeurs
+│   │
+│   └── 📊 Références
+│       ├── PROJECT_SUMMARY.md                 # Résumé complet
+│       ├── TREE.txt                           # Structure fichiers
+│       └── FILES_CREATED.md                   # Liste fichiers
+│
+├── 📄 README.md                               # README principal (racine)
+├── 📄 DOCUMENTATION.md                        # Lien vers docs/
+│
+├── ⚙️ Configuration
+│   ├── package.json                           # Dependencies + scripts
+│   ├── tsconfig.json                          # TypeScript config
+│   ├── jest.config.js                         # Jest config
+│   ├── nodemon.json                           # Nodemon config
+│   ├── .eslintrc.json                         # ESLint
+│   ├── .prettierrc.json                       # Prettier
+│   ├── .editorconfig                          # Editor config
+│   ├── .env                                   # Environment variables
+│   ├── .env.example                           # Env template
+│   └── .gitignore                             # Git ignore
+│
+├── 📜 test-api.sh                             # Script test API
+│
+└── 🗂️ Dossiers générés
+    ├── node_modules/                          # Dependencies
+    ├── dist/                                  # Compiled JS
+    └── coverage/                              # Test coverage
+
+═══════════════════════════════════════════════════════════════
+
+FICHIERS PAR CATÉGORIE:
+
+📝 Code Source:         16 fichiers TypeScript
+🧪 Tests:                5 fichiers spec.ts
+⚙️ Configuration:       11 fichiers
+📚 Documentation:       11 fichiers markdown
+
+TOTAL:                  43 fichiers
+
+═══════════════════════════════════════════════════════════════
+
+POINTS D'ENTRÉE:
+
+1. Pour DÉMARRER:              docs/00-START-HERE.md
+2. Pour NAVIGUER:              docs/INDEX.md
+3. Pour l'API:                 README.md (racine)
+4. Pour l'ARCHITECTURE:        docs/ARCHITECTURE.md
+5. Pour CONTRIBUER:            docs/CONTRIBUTING.md
+
+═══════════════════════════════════════════════════════════════

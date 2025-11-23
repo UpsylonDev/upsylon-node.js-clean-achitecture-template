@@ -1,0 +1,145 @@
+a-ddd-from-scratch/
+│
+├── 📁 src/
+│   │
+│   ├── 📁 domain/                          # ⚠️ CORE - NO EXTERNAL DEPENDENCIES
+│   │   ├── 📁 entities/
+│   │   │   ├── User.ts                     # Business entity with lifecycle
+│   │   │   └── User.spec.ts                # Unit tests
+│   │   │
+│   │   ├── 📁 valueObjects/
+│   │   │   ├── Email.ts                    # Self-validating email VO
+│   │   │   ├── Email.spec.ts
+│   │   │   ├── Password.ts                 # Self-validating + hashing VO
+│   │   │   └── Password.spec.ts
+│   │   │
+│   │   └── 📁 repositories/
+│   │       └── IUserRepository.ts          # Repository interface (abstraction)
+│   │
+│   ├── 📁 application/                     # Use Cases Orchestration
+│   │   ├── 📁 commands/
+│   │   │   ├── CreateUserCommand.ts        # CQRS Command
+│   │   │   ├── CreateUserCommandHandler.ts # Use case handler
+│   │   │   └── CreateUserCommandHandler.spec.ts
+│   │   │
+│   │   └── 📁 dtos/
+│   │       └── CreateUserDTO.ts            # Data Transfer Object
+│   │
+│   ├── 📁 infrastructure/                  # Technical Details
+│   │   ├── 📁 config/
+│   │   │   └── environment.ts              # Environment variables
+│   │   │
+│   │   └── 📁 persistence/
+│   │       ├── MongoUserRepository.ts      # MongoDB implementation
+│   │       ├── MongoUserRepository.spec.ts
+│   │       │
+│   │       └── 📁 mongoose/
+│   │           ├── connection.ts           # MongoDB connection (Singleton)
+│   │           └── userModel.ts            # Mongoose schema + model
+│   │
+│   ├── 📁 presentation/                    # HTTP API Layer
+│   │   ├── 📁 routes/
+│   │   │   └── userRoutes.ts               # Express router
+│   │   │
+│   │   ├── 📁 controllers/
+│   │   │   └── UserController.ts           # HTTP controller
+│   │   │
+│   │   └── 📁 middlewares/
+│   │       └── errorHandler.ts             # Centralized error handling
+│   │
+│   ├── app.ts                              # Express app configuration
+│   └── server.ts                           # Server startup (entry point)
+│
+├── 📄 .env                                 # Environment variables (local)
+├── 📄 .env.example                         # Environment variables template
+├── 📄 .gitignore                           # Git ignore rules
+├── 📄 .editorconfig                        # Editor configuration
+├── 📄 .eslintrc.json                       # ESLint rules
+├── 📄 .prettierrc.json                     # Prettier configuration
+│
+├── 📄 package.json                         # NPM dependencies + scripts
+├── 📄 tsconfig.json                        # TypeScript configuration (strict)
+├── 📄 jest.config.js                       # Jest test configuration
+├── 📄 nodemon.json                         # Nodemon hot-reload config
+│
+├── 📄 README.md                            # Complete documentation
+├── 📄 ARCHITECTURE.md                      # DDD architecture explained
+├── 📄 DIAGRAM.md                           # Visual diagrams
+├── 📄 QUICKSTART.md                        # 5-minute quick start guide
+├── 📄 PROJECT_SUMMARY.md                   # Project summary
+├── 📄 CLAUDE.md                            # Original specifications
+├── 📄 test-api.sh                          # API test script (bash)
+└── 📄 TREE.txt                             # This file
+
+GENERATED AFTER BUILD:
+├── 📁 node_modules/                        # Dependencies (ignored by git)
+├── 📁 dist/                                # Compiled JavaScript (ignored by git)
+└── 📁 coverage/                            # Test coverage reports (ignored by git)
+
+═══════════════════════════════════════════════════════════════════
+
+TOTAL FILES:
+  - 📄 Source files: 15 TypeScript files
+  - 🧪 Test files: 5 spec files
+  - ⚙️ Config files: 10 configuration files
+  - 📚 Documentation: 6 markdown files
+  - 📜 Scripts: 1 bash script
+
+TOTAL: 37 files
+
+═══════════════════════════════════════════════════════════════════
+
+LAYERS BREAKDOWN:
+
+1️⃣ DOMAIN (Core Business Logic)
+   - 3 TypeScript files + 3 test files
+   - NO external dependencies (except bcrypt in Password)
+   - Pure business logic
+
+2️⃣ APPLICATION (Use Cases)
+   - 3 TypeScript files + 1 test file
+   - Orchestrates domain objects
+   - Implements CQRS pattern
+
+3️⃣ INFRASTRUCTURE (Technical Details)
+   - 4 TypeScript files + 1 test file
+   - MongoDB + Mongoose
+   - Configuration management
+
+4️⃣ PRESENTATION (HTTP API)
+   - 3 TypeScript files
+   - Express routes + controllers
+   - Error handling middleware
+
+5️⃣ BOOTSTRAP (App Startup)
+   - 2 TypeScript files
+   - Express app configuration
+   - Server initialization
+
+═══════════════════════════════════════════════════════════════════
+
+DEPENDENCIES DIRECTION:
+
+Presentation → Application → Domain ← Infrastructure
+     ↓             ↓           ↓            ↓
+   HTTP         UseCases    Business    Database
+
+═══════════════════════════════════════════════════════════════════
+
+KEY PRINCIPLES APPLIED:
+
+✅ Separation of Concerns
+✅ Dependency Inversion Principle (DIP)
+✅ Single Responsibility Principle (SRP)
+✅ Open/Closed Principle (OCP)
+✅ Interface Segregation Principle (ISP)
+✅ Don't Repeat Yourself (DRY)
+✅ Repository Pattern
+✅ CQRS Pattern
+✅ Value Objects Pattern
+✅ Entity Pattern
+✅ Dependency Injection
+✅ Immutability
+✅ Self-validating objects
+
+═══════════════════════════════════════════════════════════════════

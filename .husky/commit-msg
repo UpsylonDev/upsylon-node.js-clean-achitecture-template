@@ -1,0 +1,42 @@
+#!/bin/sh
+
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo "  📋 VALIDATING COMMIT MESSAGE FORMAT"
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+echo "✅ Allowed commit types:"
+echo "   • feat      - New feature"
+echo "   • fix       - Bug fix"
+echo "   • docs      - Documentation changes"
+echo "   • style     - Code formatting (no logic change)"
+echo "   • refactor  - Code refactoring"
+echo "   • perf      - Performance improvements"
+echo "   • test      - Adding or updating tests"
+echo "   • build     - Build system or dependencies"
+echo "   • ci        - CI/CD pipeline changes"
+echo "   • chore     - Maintenance tasks"
+echo "   • revert    - Revert previous commit"
+echo "   • secu      - Security improvements"
+echo ""
+echo "📝 Format: <type>(<scope>): <subject>"
+echo "   Examples:"
+echo "   • feat(auth): add login endpoint"
+echo "   • fix(user): resolve password validation bug"
+echo "   • docs(api): update endpoint documentation"
+echo ""
+echo "════════════════════════════════════════════════════════════════"
+echo ""
+
+pnpm commitlint --edit
+
+if [ $? -eq 0 ]; then
+  echo ""
+  echo "✅ Commit message is valid!"
+  echo ""
+else
+  echo ""
+  echo "❌ Commit message validation failed!"
+  echo "   Please fix the message and try again."
+  echo ""
+fi
