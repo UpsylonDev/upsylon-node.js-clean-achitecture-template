@@ -12,14 +12,28 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
 
-    # Service containers for MongoDB
+    # Service containers for PostgreSQL and Redis
     services:
-      mongodb:
-        image: mongo:7.0
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ddd-user-api-test
         ports:
-          - 27017:27017
+          - 5432:5432
         options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand({ping: 1})'"
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
@@ -39,11 +53,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      # Install pnpm
+      # Install pnpm (version from package.json packageManager field)
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.16.1
 
       # Get pnpm store directory for caching
       - name: Get pnpm store directory
@@ -73,7 +85,13 @@ jobs:
       - name: Run tests
         run: pnpm test
         env:
-          MONGODB_URI: mongodb://localhost:27017/ddd-user-api-test
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ddd-user-api-test
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
           PORT: 3000
           BCRYPT_SALT_ROUNDS: 10
 
