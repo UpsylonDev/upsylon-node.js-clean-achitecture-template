@@ -111,7 +111,8 @@ export class MongoUserRepository implements IUserRepository {
     const password = Password.fromHash(document.password);
 
     return new User(
-      (document._id as string).toString(),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (document._id as any).toString(),
       email,
       password,
       document.createdAt

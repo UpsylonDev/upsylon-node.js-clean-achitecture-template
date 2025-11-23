@@ -8,6 +8,7 @@ import mongoose, { Schema, Document, Model } from 'mongoose';
  * @extends {Document}
  */
 export interface IUserDocument extends Document {
+  _id: mongoose.Types.ObjectId;
   email: string;
   password: string;
   createdAt: Date;
