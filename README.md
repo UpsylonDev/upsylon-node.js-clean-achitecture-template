@@ -67,6 +67,39 @@ REDIS_PORT=6379
 - **`redis`**: Redis cache (port 6379)
 - **`app`**: Node.js application (port 3000) - **used only for production deployment**
 
+## Monitoring
+
+The project now includes a full monitoring stack with Prometheus, Grafana, and Loki.
+
+### Starting the monitoring stack
+```bash
+# Start all services including monitoring
+docker-compose up -d
+```
+
+- **Prometheus** is available at `http://localhost:9090` and scrapes metrics from the `/metrics` endpoint of the application.
+- **Grafana** is available at `http://localhost:3001`. Log in with the default credentials `admin / admin`.
+- **Loki** is available at `http://localhost:3100` and aggregates logs from the application.
+
+### Grafana dashboards
+A basic dashboard is provisioned that shows:
+- HTTP request duration histogram
+- Process CPU and memory usage
+- Logs from the application (via Loki)
+
+You can explore additional metrics and logs in Grafana's **Explore** section.
+
+### Accessing metrics directly
+```bash
+curl http://localhost:3000/metrics
+```
+
+### Logs
+Application logs are written to the `logs` directory and are collected by Loki.
+
+For more advanced configuration, edit the files in `monitoring/grafana/provisioning`.
+
+
 #### Useful Commands
 
 ```bash

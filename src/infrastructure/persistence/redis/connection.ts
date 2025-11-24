@@ -97,7 +97,7 @@ export class RedisConnection {
    * @throws {Error} If Redis is not connected
    */
   public getClient(): Redis {
-    if (!this.client || !this.isConnected) {
+    if (!this.client) {
       throw new Error('Redis client not connected');
     }
     return this.client;
