@@ -114,6 +114,22 @@ The project is organized into three main layers:
 2.  **Infrastructure**: Implementation of interfaces (repositories, database, external services).
 3.  **Presentation**: API endpoints, controllers, and request handling.
 
+## Contributing
+
+We welcome contributions! Please follow these steps:
+
+1. **Fork the repository** and clone your fork.
+2. **Create a feature branch**: `git checkout -b feature/your-feature`.
+3. **Install dependencies**: `pnpm install`.
+4. **Run tests** to ensure everything works: `pnpm test`.
+5. **Follow the coding style** enforced by ESLint and Prettier. Run `pnpm lint` to check.
+6. **Commit messages** should follow the [Conventional Commits] format (see `COMMIT_CONVENTION.md`).
+7. **Open a Pull Request** targeting the `recette` branch. Describe your changes and reference any related issues.
+
+For major changes, please open an issue first to discuss the proposed modifications.
+
+Thank you for helping improve this project!
+
 ## License
 
 MIT
