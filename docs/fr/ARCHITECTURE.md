@@ -1,5 +1,7 @@
 # Architecture du Projet
 
+[Architecture Diagram (English)](../en/architecture-diagram.md)
+
 Ce projet suit les principes de la **Clean Architecture** (aussi appelée Architecture Hexagonale ou Onion Architecture). L'objectif principal est de séparer le code métier (Business Logic) des détails techniques (Frameworks, Base de données, UI).
 
 ## 🏗 Vue d'ensemble

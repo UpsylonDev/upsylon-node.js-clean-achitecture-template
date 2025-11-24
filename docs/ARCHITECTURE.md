@@ -1,5 +1,7 @@
 # Architecture Documentation
 
+[Architecture Diagram (English)](./en/architecture-diagram.md)
+
 ## Overview
 
 This project follows **Clean Architecture** and **Domain-Driven Design (DDD)** principles to create a maintainable, testable, and scalable REST API.
