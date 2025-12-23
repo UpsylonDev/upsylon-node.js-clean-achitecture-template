@@ -45,13 +45,15 @@ export class RedisConnection {
     }
 
     try {
+      const useTls = process.env.REDIS_USE_TLS === 'true';
+
       this.client = new Redis({
         host: Environment.REDIS_HOST,
         port: Environment.REDIS_PORT,
         password: Environment.REDIS_PASSWORD || undefined,
         db: Environment.REDIS_DB,
-        // Enable TLS in production
-        tls: Environment.isProduction() ? {} : undefined,
+        // Enable TLS only if explicitly set
+        tls: useTls ? {} : undefined,
         retryStrategy: (times: number) => {
           const delay = Math.min(times * 50, 2000);
           return delay;

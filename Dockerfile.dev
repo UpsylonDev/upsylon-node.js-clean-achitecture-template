@@ -1,0 +1,23 @@
+# Development Dockerfile with hot reload
+FROM node:20-alpine
+
+# Enable corepack and prepare pnpm
+RUN corepack enable && corepack prepare pnpm@10.23.0 --activate
+
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install all dependencies (including dev dependencies)
+RUN pnpm install --frozen-lockfile
+
+# Copy source code and configuration files
+COPY tsconfig.json ./
+COPY src ./src
+
+# Expose port
+EXPOSE 3000
+
+# Start in development mode with hot reload
+CMD ["pnpm", "dev"]

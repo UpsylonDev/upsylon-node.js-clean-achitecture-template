@@ -2,13 +2,32 @@
 
 This project is a REST API built with Node.js, Express, and TypeScript, following Clean Architecture and Domain-Driven Design (DDD) principles.
 
+## 🚀 Quick Start
+
+**Development** (with hot reload):
+```bash
+pnpm install
+cp .env.development .env
+pnpm docker:dev:db && pnpm dev
+```
+
+**Production** (with monitoring):
+```bash
+cp .env.production.example .env.production  # Edit with real values
+pnpm docker:prod:build
+```
+
+📖 **Guides**: [Quick Start](QUICK_START.md) | [Deployment](DEPLOYMENT.md) | [Claude Guide](CLAUDE.md)
+
 ## Features
 
 - **Clean Architecture**: Separation of concerns (Domain, Infrastructure, Presentation).
 - **PostgreSQL**: Relational database with TypeORM.
+- **Redis**: Caching with Cache-Aside pattern.
 - **Testing**: Jest for unit and integration tests.
-- **Security**: Helmet, CORS, Rate Limiting.
-- **Monitoring**: Prometheus metrics and Pino logging.
+- **Security**: Helmet, CORS, Rate Limiting, Stripe payments.
+- **Monitoring**: Prometheus, Grafana, Loki stack (production only).
+- **Logging**: Pino for high-performance structured logging.
 
 ## Getting Started
 
@@ -16,8 +35,8 @@ This project is a REST API built with Node.js, Express, and TypeScript, followin
 
 - Node.js >= 20.0.0
 - pnpm
-- PostgreSQL
-- Redis (optional, for rate limiting)
+- Docker & Docker Compose
+- Make (optional, for simplified commands)
 
 ### Installation
 
@@ -26,46 +45,102 @@ This project is a REST API built with Node.js, Express, and TypeScript, followin
    ```bash
    pnpm install
    ```
-3. Configure environment variables:
-   Copy `.env.example` to `.env` and update the values.
+3. Configure environment variables (see Environment Configuration below)
 
-### Development with Docker Compose
+## Environment Configuration
 
-The project uses Docker Compose to run PostgreSQL and Redis. **You need to start these services before running the application in development mode.**
+The project supports two environments: **development** and **production**.
 
-#### Quick Start
+### Development Environment
+
+Copy the development environment file:
+```bash
+cp .env.development .env
+```
+
+Or create your own `.env` with development settings.
+
+### Production Environment
+
+For production, create a `.env.production` file based on `.env.production.example`:
+```bash
+cp .env.production.example .env.production
+```
+
+**Important:** Never commit `.env.production` to version control!
+
+## Running the Application
+
+### Option 1: Using Make (Recommended)
 
 ```bash
-# 1. Start PostgreSQL and Redis
-docker-compose up postgres redis -d
+# Development mode
+make dev              # Start development environment
+make dev-build        # Build and start development
+make dev-logs         # View logs
+make dev-down         # Stop development
 
-# 2. Verify services are running
-docker-compose ps
+# Production mode
+make prod             # Start production environment
+make prod-build       # Build and start production
+make prod-logs        # View logs
+make prod-down        # Stop production
 
-# 3. Run the application in development mode
+# Utilities
+make clean            # Remove all containers and volumes
+make test             # Run tests
+make help             # Show all commands
+```
+
+### Option 2: Using npm/pnpm scripts
+
+```bash
+# Development mode
+pnpm docker:dev           # Start development
+pnpm docker:dev:build     # Build and start
+pnpm docker:dev:logs      # View logs
+pnpm docker:dev:down      # Stop
+
+# Production mode
+pnpm docker:prod          # Start production
+pnpm docker:prod:build    # Build and start
+pnpm docker:prod:logs     # View logs
+pnpm docker:prod:down     # Stop
+```
+
+### Option 3: Using docker-compose directly
+
+```bash
+# Development
+docker-compose -f docker-compose.dev.yml up -d
+
+# Production
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+### Local Development (without Docker)
+
+If you want to run the app locally without Docker:
+
+```bash
+# 1. Start only databases with Docker
+docker-compose -f docker-compose.dev.yml up postgres redis -d
+
+# 2. Run the app locally
 pnpm dev
 ```
 
-#### Environment Configuration
+## Differences between Development and Production
 
-Your `.env` file should point to the Docker containers:
-
-```env
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=ddd-user-api
-
-REDIS_HOST=localhost
-REDIS_PORT=6379
-```
-
-#### Docker Compose Services
-
-- **`postgres`**: PostgreSQL database (port 5432)
-- **`redis`**: Redis cache (port 6379)
-- **`app`**: Node.js application (port 3000) - **used only for production deployment**
+| Feature | Development | Production |
+|---------|-------------|-----------|
+| Port | 3000 | 3002 |
+| Hot Reload | ✅ Yes | ❌ No |
+| Logging | Debug (pretty) | Info (JSON) |
+| Source Maps | ✅ Yes | ❌ No |
+| Redis TLS | ❌ Disabled | ⚙️ Configurable |
+| Monitoring Stack | ❌ Not included | ✅ Prometheus, Grafana, Loki |
+| Volume Mounting | Source code mounted | Only logs |
 
 ## Monitoring
 
