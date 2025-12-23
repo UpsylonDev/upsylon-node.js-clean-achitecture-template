@@ -36,11 +36,22 @@
     "*.lock",
     "pnpm-lock.yaml",
     "package-lock.json",
-    "yarn.lock"
+    "yarn.lock",
+    "package.json",
   ],
   "ignoreRegExpList": [
     "/\\b[A-Z]{2,}\\b/g",
     "/0x[0-9a-fA-F]+/g",
     "/[a-f0-9]{32,}/gi"
+  ],
+  "dictionaries": [
+    "custom-dictionary"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "custom-dictionary",
+      "path": "./.cspell/custom-dictionary.txt",
+      "addWords": true
+    }
   ]
 }
