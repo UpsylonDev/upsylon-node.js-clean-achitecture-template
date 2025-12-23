@@ -1,0 +1,46 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "upsylon",
+    "bcryptjs",
+    "ioredis",
+    "typeorm",
+    "nodemon",
+    "pino",
+    "commitlint",
+    "loki",
+    "grafana",
+    "prometheus",
+    "whsec",
+    "dotenv",
+    "nestjs",
+    "fastify",
+    "pnpm",
+    "postgresql",
+    "postgres",
+    "healthcheck",
+    "instanceof",
+    "typeof",
+    "readonly",
+    "allowlist",
+    "blocklist"
+  ],
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    ".git",
+    "*.log",
+    "*.lock",
+    "pnpm-lock.yaml",
+    "package-lock.json",
+    "yarn.lock"
+  ],
+  "ignoreRegExpList": [
+    "/\\b[A-Z]{2,}\\b/g",
+    "/0x[0-9a-fA-F]+/g",
+    "/[a-f0-9]{32,}/gi"
+  ]
+}

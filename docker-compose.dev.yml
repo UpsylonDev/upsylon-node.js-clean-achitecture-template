@@ -1,5 +1,3 @@
-version: '3.8'
-
 # Development environment - Only databases
 # Run the app locally with: pnpm dev
 
