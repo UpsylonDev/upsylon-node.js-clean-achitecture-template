@@ -7,7 +7,7 @@ Welcome to the project! This guide aims to help you launch the application quick
 Before starting, make sure you have the following tools installed on your machine:
 
 1.  **Node.js** (version 20 or higher): [Download Node.js](https://nodejs.org/)
-2.  **Docker Desktop**: [Download Docker](https://www.docker.com/products/docker-desktop/) (Required for the database and Redis)
+2.  **Docker Desktop**: [Download Docker](https://www.docker.com/products/docker-desktop/) (Required for MongoDB and Redis)
 3.  **pnpm**: A fast package manager.
     - To install it: `npm install -g pnpm`
 
@@ -36,7 +36,7 @@ The project needs environment variables to function (database connection, secret
 
 ### 1. Start Services (Database & Redis)
 
-We use Docker to run PostgreSQL and Redis without having to install them manually on your system.
+We use Docker to run MongoDB and Redis without having to install them manually on your system.
 
 ```bash
 docker-compose up -d
@@ -70,5 +70,6 @@ To verify that everything is working correctly:
 
 ## ❓ Troubleshooting
 
-- **Port Error**: If port 3000 or 5432 is already in use, check that no other service is running on these ports. You can change the ports in the `.env` file and `docker-compose.yml`.
+- **Port Error**: If port 3000 or 27017 is already in use, check that no other service is running on these ports. You can change the ports in the `.env` file and `docker-compose.yml`.
 - **Docker not responding**: Make sure Docker Desktop is running.
+- **MongoDB connection error**: Verify that the MongoDB container is running with `docker ps` and check the `MONGODB_URI` in your `.env` file.

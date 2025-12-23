@@ -22,10 +22,10 @@ pnpm docker:prod:build
 ## Features
 
 - **Clean Architecture**: Separation of concerns (Domain, Infrastructure, Presentation).
-- **PostgreSQL**: Relational database with TypeORM.
+- **MongoDB**: NoSQL database with Mongoose ODM.
 - **Redis**: Caching with Cache-Aside pattern.
 - **Testing**: Jest for unit and integration tests.
-- **Security**: Helmet, CORS, Rate Limiting, Stripe payments.
+- **Security**: Helmet, CORS, Rate Limiting, bcrypt password hashing.
 - **Monitoring**: Prometheus, Grafana, Loki stack (production only).
 - **Logging**: Pino for high-performance structured logging.
 
@@ -124,7 +124,7 @@ If you want to run the app locally without Docker:
 
 ```bash
 # 1. Start only databases with Docker
-docker-compose -f docker-compose.dev.yml up postgres redis -d
+docker-compose -f docker-compose.dev.yml up mongodb redis -d
 
 # 2. Run the app locally
 pnpm dev
@@ -179,13 +179,13 @@ For more advanced configuration, edit the files in `monitoring/grafana/provision
 
 ```bash
 # Start services in background
-docker-compose up postgres redis -d
+docker-compose up mongodb redis -d
 
 # Stop services
 docker-compose down
 
 # View logs
-docker-compose logs -f postgres
+docker-compose logs -f mongodb
 docker-compose logs -f redis
 
 # Reset database (removes all data)

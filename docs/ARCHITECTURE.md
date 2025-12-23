@@ -19,7 +19,7 @@ src/
 │   ├── commands/        # Commands & Command Handlers
 │   └── dtos/            # Data Transfer Objects
 ├── infrastructure/      # External implementations
-│   ├── persistence/     # Database (TypeORM, Redis)
+│   ├── persistence/     # Database (Mongoose, Redis)
 │   ├── config/          # Environment configuration
 │   ├── logging/         # Logging (Pino)
 │   ├── monitoring/      # Metrics (Prometheus)
@@ -97,7 +97,7 @@ Each layer has a clear responsibility:
 
 #### Persistence
 
-- **TypeORM**: PostgreSQL connection and User repository
+- **Mongoose**: MongoDB connection and User repository
 - **Redis**: Caching and rate limiting
 
 #### Configuration
@@ -134,7 +134,7 @@ Each layer has a clear responsibility:
    - Checks email uniqueness via `IUserRepository`
    - Creates `User` entity
    - Saves via repository
-5. **Repository** → Persists to PostgreSQL via TypeORM
+5. **Repository** → Persists to MongoDB via Mongoose
 6. **Controller** → Returns HTTP 201 with user data
 
 ## Testing Strategy
@@ -145,8 +145,8 @@ Each layer has a clear responsibility:
 
 ## Database
 
-- **PostgreSQL**: Primary database for user data
-- **TypeORM**: ORM with entity mapping
+- **MongoDB**: Primary database for user data
+- **Mongoose**: ODM with schema mapping
 - **Redis**: Caching layer for performance
 
 ## Security
@@ -160,11 +160,11 @@ Each layer has a clear responsibility:
 
 ### Docker Compose Setup
 
-The project uses Docker Compose to manage PostgreSQL and Redis services. This ensures consistent development environments across all team members.
+The project uses Docker Compose to manage MongoDB and Redis services. This ensures consistent development environments across all team members.
 
 #### Services
 
-- **PostgreSQL** (port 5432): Primary database
+- **MongoDB** (port 27017): Primary database
 - **Redis** (port 6379): Cache and rate limiting
 - **App** (port 3000): Node.js application (production only)
 
@@ -173,8 +173,8 @@ The project uses Docker Compose to manage PostgreSQL and Redis services. This en
 For optimal development experience, run databases in Docker and the app locally:
 
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up postgres redis -d
+# Start MongoDB and Redis
+docker-compose up mongodb redis -d
 
 # Run app locally with hot-reload
 pnpm dev
@@ -192,8 +192,7 @@ pnpm dev
 **Local development** (`.env`):
 
 ```env
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
+MONGODB_URI=mongodb://localhost:27017/ddd-user-api
 REDIS_HOST=localhost
 REDIS_PORT=6379
 ```
@@ -201,11 +200,9 @@ REDIS_PORT=6379
 **Docker production** (docker-compose.yml):
 
 ```env
-POSTGRES_HOST=postgres
+MONGODB_URI=mongodb://mongodb:27017/ddd-user-api
 REDIS_HOST=redis
 ```
-
-See [README.Docker.md](../README.Docker.md) for complete Docker documentation.
 
 ## Next Steps
 

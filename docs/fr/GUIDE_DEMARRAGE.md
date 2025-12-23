@@ -7,7 +7,7 @@ Bienvenue sur le projet ! Ce guide a pour but de vous aider à lancer l'applicat
 Avant de commencer, assurez-vous d'avoir installé les outils suivants sur votre machine :
 
 1.  **Node.js** (version 20 ou supérieure) : [Télécharger Node.js](https://nodejs.org/)
-2.  **Docker Desktop** : [Télécharger Docker](https://www.docker.com/products/docker-desktop/) (Nécessaire pour la base de données et Redis)
+2.  **Docker Desktop** : [Télécharger Docker](https://www.docker.com/products/docker-desktop/) (Nécessaire pour MongoDB et Redis)
 3.  **pnpm** : Un gestionnaire de paquets rapide.
     - Pour l'installer : `npm install -g pnpm`
 
@@ -36,7 +36,7 @@ Le projet a besoin de variables d'environnement pour fonctionner (connexion base
 
 ### 1. Démarrer les services (Base de données & Redis)
 
-Nous utilisons Docker pour lancer PostgreSQL et Redis sans avoir à les installer manuellement sur votre système.
+Nous utilisons Docker pour lancer MongoDB et Redis sans avoir à les installer manuellement sur votre système.
 
 ```bash
 docker-compose up -d
@@ -70,5 +70,6 @@ Pour vérifier que tout fonctionne correctement :
 
 ## ❓ En cas de problème
 
-- **Erreur de port** : Si le port 3000 ou 5432 est déjà utilisé, vérifiez qu'aucun autre service ne tourne sur ces ports. Vous pouvez changer les ports dans le fichier `.env` et `docker-compose.yml`.
+- **Erreur de port** : Si le port 3000 ou 27017 est déjà utilisé, vérifiez qu'aucun autre service ne tourne sur ces ports. Vous pouvez changer les ports dans le fichier `.env` et `docker-compose.yml`.
 - **Docker ne répond pas** : Assurez-vous que Docker Desktop est bien lancé.
+- **Erreur de connexion MongoDB** : Vérifiez que le conteneur MongoDB est bien en cours d'exécution avec `docker ps` et vérifiez la valeur de `MONGODB_URI` dans votre fichier `.env`.
