@@ -14,7 +14,15 @@ if [ -z "$EMAIL" ]; then
     exit 1
 fi
 
+# Check if .env.production exists
+if [ ! -f ".env.production" ]; then
+    echo "Error: .env.production file not found!"
+    echo "Please create .env.production before running this script."
+    exit 1
+fi
+
 echo "Initializing SSL certificate for $DOMAIN..."
+echo "Loading environment from .env.production..."
 
 # Create required directories
 mkdir -p nginx/conf.d
@@ -50,13 +58,13 @@ fi
 mv nginx/conf.d/api.conf.temp nginx/conf.d/api.conf
 
 echo "Starting Nginx with temporary HTTP-only configuration..."
-docker compose -f docker-compose.prod.yml up -d nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d nginx
 
 echo "Waiting for Nginx to start..."
 sleep 5
 
 echo "Obtaining SSL certificate from Let's Encrypt..."
-docker compose -f docker-compose.prod.yml run --rm certbot certonly \
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm certbot certonly \
     --webroot \
     --webroot-path=/var/www/certbot \
     --email "$EMAIL" \
@@ -131,7 +139,7 @@ FULLEOF
 fi
 
 echo "Restarting Nginx with SSL configuration..."
-docker compose -f docker-compose.prod.yml restart nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml restart nginx
 
 echo ""
 echo "✅ SSL certificate obtained successfully!"

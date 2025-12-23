@@ -106,13 +106,13 @@ Ce script va :
 
 ```bash
 # Démarrer en mode production
-docker compose -f docker-compose.prod.yml up -d
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d
 
 # Vérifier les logs
-docker compose -f docker-compose.prod.yml logs -f
+docker compose --env-file .env.production -f docker-compose.prod.yml logs -f
 
 # Vérifier l'état des conteneurs
-docker compose -f docker-compose.prod.yml ps
+docker compose --env-file .env.production -f docker-compose.prod.yml ps
 ```
 
 ### Étape 5 : Tester le Déploiement
@@ -131,22 +131,24 @@ curl https://api.upsylon.tech/health
 
 ### Commandes Courantes
 
+**Note:** Toutes les commandes doivent utiliser `--env-file .env.production` pour charger les bonnes variables.
+
 ```bash
 # Voir les logs en temps réel
-docker compose -f docker-compose.prod.yml logs -f api
+docker compose --env-file .env.production -f docker-compose.prod.yml logs -f api
 
 # Redémarrer un service spécifique
-docker compose -f docker-compose.prod.yml restart api
+docker compose --env-file .env.production -f docker-compose.prod.yml restart api
 
 # Arrêter tous les services
-docker compose -f docker-compose.prod.yml down
+docker compose --env-file .env.production -f docker-compose.prod.yml down
 
 # Arrêter et supprimer les volumes (⚠️ EFFACE LES DONNÉES)
-docker compose -f docker-compose.prod.yml down -v
+docker compose --env-file .env.production -f docker-compose.prod.yml down -v
 
 # Mettre à jour après changement de code
 git pull
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build
 ```
 
 ### Monitoring
@@ -156,9 +158,9 @@ docker compose -f docker-compose.prod.yml up -d --build
 docker stats
 
 # Voir les logs d'un service spécifique
-docker compose -f docker-compose.prod.yml logs nginx
-docker compose -f docker-compose.prod.yml logs postgres
-docker compose -f docker-compose.prod.yml logs redis
+docker compose --env-file .env.production -f docker-compose.prod.yml logs nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml logs postgres
+docker compose --env-file .env.production -f docker-compose.prod.yml logs redis
 
 # Accéder à Grafana (si configuré)
 # http://votre-ip:3001
@@ -176,10 +178,10 @@ Le certificat SSL se renouvelle **automatiquement** :
 
 ```bash
 # Forcer le renouvellement
-docker compose -f docker-compose.prod.yml run --rm certbot renew --force-renewal
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm certbot renew --force-renewal
 
 # Recharger Nginx
-docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
+docker compose --env-file .env.production -f docker-compose.prod.yml exec nginx nginx -s reload
 ```
 
 ## Sauvegardes
@@ -188,10 +190,10 @@ docker compose -f docker-compose.prod.yml exec nginx nginx -s reload
 
 ```bash
 # Créer un backup PostgreSQL
-docker compose -f docker-compose.prod.yml exec postgres pg_dump -U postgres ddd-user-api > backup_$(date +%Y%m%d).sql
+docker compose --env-file .env.production -f docker-compose.prod.yml exec postgres pg_dump -U postgres ddd-user-api > backup_$(date +%Y%m%d).sql
 
 # Restaurer un backup
-docker compose -f docker-compose.prod.yml exec -T postgres psql -U postgres ddd-user-api < backup_20231215.sql
+docker compose --env-file .env.production -f docker-compose.prod.yml exec -T postgres psql -U postgres ddd-user-api < backup_20231215.sql
 ```
 
 ### Sauvegarder les Certificats SSL
@@ -211,10 +213,10 @@ sudo tar -xzf certbot-backup-20231215.tar.gz
 git pull
 
 # 2. Reconstruire et redémarrer l'API
-docker compose -f docker-compose.prod.yml up -d --build api
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build api
 
 # 3. Vérifier les logs
-docker compose -f docker-compose.prod.yml logs -f api
+docker compose --env-file .env.production -f docker-compose.prod.yml logs -f api
 ```
 
 ## Dépannage
@@ -223,50 +225,50 @@ docker compose -f docker-compose.prod.yml logs -f api
 
 ```bash
 # Vérifier que Nginx fonctionne
-docker compose -f docker-compose.prod.yml ps nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml ps nginx
 
 # Vérifier les logs Nginx
-docker compose -f docker-compose.prod.yml logs nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml logs nginx
 
 # Tester la config Nginx
-docker compose -f docker-compose.prod.yml exec nginx nginx -t
+docker compose --env-file .env.production -f docker-compose.prod.yml exec nginx nginx -t
 ```
 
 ### Problème : Erreur SSL
 
 ```bash
 # Vérifier les certificats
-docker compose -f docker-compose.prod.yml exec nginx ls -la /etc/letsencrypt/live/api.upsylon.tech/
+docker compose --env-file .env.production -f docker-compose.prod.yml exec nginx ls -la /etc/letsencrypt/live/api.upsylon.tech/
 
 # Renouveler manuellement
-docker compose -f docker-compose.prod.yml run --rm certbot renew --force-renewal
-docker compose -f docker-compose.prod.yml restart nginx
+docker compose --env-file .env.production -f docker-compose.prod.yml run --rm certbot renew --force-renewal
+docker compose --env-file .env.production -f docker-compose.prod.yml restart nginx
 ```
 
 ### Problème : L'API ne répond pas
 
 ```bash
 # Vérifier que l'API fonctionne
-docker compose -f docker-compose.prod.yml ps api
+docker compose --env-file .env.production -f docker-compose.prod.yml ps api
 
 # Vérifier les logs
-docker compose -f docker-compose.prod.yml logs api
+docker compose --env-file .env.production -f docker-compose.prod.yml logs api
 
 # Tester le health check directement
-docker compose -f docker-compose.prod.yml exec api wget -O- http://localhost:3000/health
+docker compose --env-file .env.production -f docker-compose.prod.yml exec api wget -O- http://localhost:3000/health
 ```
 
 ### Problème : Base de données inaccessible
 
 ```bash
 # Vérifier PostgreSQL
-docker compose -f docker-compose.prod.yml ps postgres
+docker compose --env-file .env.production -f docker-compose.prod.yml ps postgres
 
 # Se connecter à la base
-docker compose -f docker-compose.prod.yml exec postgres psql -U postgres ddd-user-api
+docker compose --env-file .env.production -f docker-compose.prod.yml exec postgres psql -U postgres ddd-user-api
 
 # Vérifier les logs
-docker compose -f docker-compose.prod.yml logs postgres
+docker compose --env-file .env.production -f docker-compose.prod.yml logs postgres
 ```
 
 ## Sécurité
@@ -279,8 +281,8 @@ docker compose -f docker-compose.prod.yml logs postgres
 4. **Mettez à jour régulièrement** :
    ```bash
    # Mettre à jour les images Docker
-   docker compose -f docker-compose.prod.yml pull
-   docker compose -f docker-compose.prod.yml up -d
+   docker compose --env-file .env.production -f docker-compose.prod.yml pull
+   docker compose --env-file .env.production -f docker-compose.prod.yml up -d
    ```
 5. **Surveillez les logs** pour détecter les activités suspectes
 
@@ -320,8 +322,8 @@ Tous les services communiquent via le réseau `backend` :
 ## Support
 
 Pour obtenir de l'aide :
-1. Consultez les logs : `docker compose -f docker-compose.prod.yml logs`
-2. Vérifiez la santé des services : `docker compose -f docker-compose.prod.yml ps`
+1. Consultez les logs : `docker compose --env-file .env.production -f docker-compose.prod.yml logs`
+2. Vérifiez la santé des services : `docker compose --env-file .env.production -f docker-compose.prod.yml ps`
 3. Ouvrez une issue sur le repository GitHub
 
 ## Références
