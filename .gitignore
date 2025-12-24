@@ -7,10 +7,10 @@ yarn.lock
 dist/
 build/
 
-# Environment variables
+# Environment variables (contains secrets - never commit!)
 .env
 .env.local
-.env.production
+.env.*.local
 
 # IDE
 .vscode/
