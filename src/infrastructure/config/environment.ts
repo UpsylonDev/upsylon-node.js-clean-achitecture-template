@@ -41,7 +41,8 @@ export class Environment {
   /**
    * Mot de passe PostgreSQL.
    */
-  public static readonly POSTGRES_PASSWORD: string = process.env.POSTGRES_PASSWORD || 'postgres';
+  public static readonly POSTGRES_PASSWORD: string =
+    process.env.POSTGRES_PASSWORD || 'postgres';
 
   /**
    * Nom de la base de données PostgreSQL.
@@ -140,10 +141,11 @@ export class Environment {
       'POSTGRES_PASSWORD',
       'POSTGRES_DB',
     ];
-    // Require Stripe secrets in production
-    if (Environment.isProduction()) {
-      requiredVars.push('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET');
-    }
+    // Note: Stripe secrets are optional - only required if you're using Stripe payments
+    // To make them required in production, uncomment the lines below:
+    // if (Environment.isProduction()) {
+    //   requiredVars.push('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET');
+    // }
 
     const missingVars = requiredVars.filter((varName) => {
       const value = process.env[varName];
